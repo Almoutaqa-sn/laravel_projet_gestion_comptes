@@ -30,4 +30,4 @@ services:
       - key: LOG_CHANNEL
         value: stack
       - key: LOG_LEVEL
-        value: error
+        value: debug

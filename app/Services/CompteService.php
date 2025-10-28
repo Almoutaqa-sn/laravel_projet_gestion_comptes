@@ -15,13 +15,21 @@ class CompteService
      */
     public function findByNumero($numero)
     {
-        $compte = Compte::where('numero_compte', $numero)->first();
-        
-        if (!$compte) {
-            throw new \App\Exceptions\CompteNotFoundException("Le compte avec le numéro {$numero} n'a pas été trouvé.");
+        \Log::info("Recherche du compte numéro: {$numero}");
+        try {
+            $compte = Compte::where('numero_compte', $numero)->first();
+
+            if (!$compte) {
+                \Log::warning("Compte non trouvé: {$numero}");
+                throw new \App\Exceptions\CompteNotFoundException("Le compte avec le numéro {$numero} n'a pas été trouvé.");
+            }
+
+            \Log::info("Compte trouvé: {$numero}");
+            return $compte;
+        } catch (\Exception $e) {
+            \Log::error("Erreur lors de la recherche du compte {$numero}: " . $e->getMessage());
+            throw $e;
         }
-        
-        return $compte;
     }
     public function listerComptes(array $params)
     {
@@ -88,12 +96,19 @@ class CompteService
 
     public function recupererCompteParNumero(string $numero)
     {
-        $compte = Compte::numero($numero)->first();
+        \Log::info("Récupération du compte par numéro: {$numero}");
+        try {
+            $compte = Compte::numero($numero)->first();
 
-        if (!$compte) {
-            throw new CompteNotFoundException();
+            if (!$compte) {
+                \Log::warning("Compte non trouvé via scope: {$numero}");
+                throw new \App\Exceptions\CompteNotFoundException("Compte non trouvé");
+            }
+
+            return $compte;
+        } catch (\Exception $e) {
+            \Log::error("Erreur récupération compte {$numero}: " . $e->getMessage());
+            throw $e;
         }
-
-        return $compte;
     }
 }

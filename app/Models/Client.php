@@ -30,10 +30,6 @@ class Client extends Model
             }
         });
     }
-    public function client()
-{
-    return $this->belongsTo(Client::class);
-}
 
 
     /** Relations */

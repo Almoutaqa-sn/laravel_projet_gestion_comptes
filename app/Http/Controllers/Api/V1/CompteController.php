@@ -12,8 +12,8 @@ use OpenApi\Annotations as OA;
 
 /**
  * @OA\Server(
- *     url="http://127.0.0.1:8000/api/v1",
- *     description="Serveur local"
+ *     url="https://laravel-projet-gestion-comptes.onrender.com/api/v1",
+ *     description="Serveur de production"
  * )
  */
 class CompteController extends Controller
@@ -46,10 +46,13 @@ class CompteController extends Controller
      */
     public function show($numero)
     {
+        \Log::info("Requête show pour compte: {$numero}");
         try {
             $compte = $this->compteService->findByNumero($numero);
+            \Log::info("Compte trouvé et retourné: {$numero}");
             return $this->success(new CompteResource($compte));
         } catch (\Exception $e) {
+            \Log::error("Erreur dans show compte {$numero}: " . $e->getMessage());
             return $this->error($e->getMessage(), 404);
         }
     }
@@ -118,12 +121,19 @@ class CompteController extends Controller
      */
     public function index(Request $request)
     {
-        $result = $this->compteService->listerComptes($request->query());
+        \Log::info("Requête index comptes", ['params' => $request->query()]);
+        try {
+            $result = $this->compteService->listerComptes($request->query());
+            \Log::info("Liste comptes récupérée avec succès", ['count' => count($result['data'])]);
 
-        return $this->success([
-            'data' => CompteResource::collection($result['data']),
-            'pagination' => $result['pagination'],
-            'links' => $result['links'],
-        ]);
+            return $this->success([
+                'data' => CompteResource::collection($result['data']),
+                'pagination' => $result['pagination'],
+                'links' => $result['links'],
+            ]);
+        } catch (\Exception $e) {
+            \Log::error("Erreur dans index comptes: " . $e->getMessage());
+            return $this->error('Erreur lors de la récupération des comptes', 500);
+        }
     }
 }
