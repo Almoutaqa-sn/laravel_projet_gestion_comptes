@@ -18,12 +18,16 @@ services:
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
-        value: your-db-host.render.com
+        value: dpg-d402dbv5r7bs73a49r80-a.oregon-postgres.render.com
       - key: DB_PORT
-        value: 5434
+        value: 5432
       - key: DB_DATABASE
-        value: your_db_name
+        value: laravel_gestion_comptes_db
       - key: DB_USERNAME
-        value: your_db_user
+        value: laravel_gestion_comptes_db_user
       - key: DB_PASSWORD
         sync: false
+      - key: LOG_CHANNEL
+        value: stack
+      - key: LOG_LEVEL
+        value: error
