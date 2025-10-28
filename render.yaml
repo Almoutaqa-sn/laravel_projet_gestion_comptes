@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: laravel-projet-gestion-comptes
+    env: docker
+    plan: free
+    branch: main
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        sync: false
+      - key: APP_URL
+        value: https://laravel-projet-gestion-comptes.onrender.com
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        value: your-db-host.render.com
+      - key: DB_PORT
+        value: 5434
+      - key: DB_DATABASE
+        value: your_db_name
+      - key: DB_USERNAME
+        value: your_db_user
+      - key: DB_PASSWORD
+        sync: false
