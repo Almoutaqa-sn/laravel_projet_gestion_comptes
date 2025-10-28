@@ -16,3 +16,5 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Les routes Swagger sont automatiquement enregistrées par le package L5Swagger

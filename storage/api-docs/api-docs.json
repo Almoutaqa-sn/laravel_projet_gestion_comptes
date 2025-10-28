@@ -1,0 +1,148 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API de Gestion des Comptes",
+        "description": "Documentation de l'API du système de gestion des comptes bancaires",
+        "contact": {
+            "email": "contact@example.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000/api/v1",
+            "description": "Serveur local"
+        },
+        {
+            "url": "/"
+        }
+    ],
+    "paths": {
+        "/comptes/{numero}": {
+            "get": {
+                "tags": [
+                    "Comptes"
+                ],
+                "summary": "Récupère les détails d'un compte spécifique",
+                "description": "Récupère les détails d'un compte spécifique",
+                "operationId": "f1ffa53ac6667317a7418bbe52059a19",
+                "parameters": [
+                    {
+                        "name": "numero",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Succès"
+                    },
+                    "404": {
+                        "description": "Compte non trouvé"
+                    }
+                }
+            }
+        },
+        "/comptes": {
+            "get": {
+                "tags": [
+                    "Comptes"
+                ],
+                "summary": "Liste tous les comptes avec pagination et filtres",
+                "description": "Lister tous les comptes",
+                "operationId": "62186908ce548b721ae5b90f621e56d4",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Recherche par titulaire ou numéro de compte",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Filtre par type de compte",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "statut",
+                        "in": "query",
+                        "description": "Filtre par statut de compte",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Direction du tri (asc/desc)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "orderBy",
+                        "in": "query",
+                        "description": "Champ pour le tri",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "created_at",
+                                "solde",
+                                "titulaire",
+                                "type",
+                                "statut",
+                                "numero_compte"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Numéro de page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Nombre d'éléments par page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des comptes récupérée avec succès"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Comptes",
+            "description": "Comptes"
+        }
+    ]
+}
