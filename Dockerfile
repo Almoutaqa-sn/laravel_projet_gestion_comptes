@@ -9,7 +9,8 @@ RUN apt-get update && apt-get install -y \
     zip \
     nginx \
     supervisor \
-    && docker-php-ext-install pdo pdo_pgsql zip opcache
+    && docker-php-ext-configure pgsql --with-pgsql=/usr/local/pgsql \
+    && docker-php-ext-install pdo pdo_pgsql pgsql zip opcache
 
 # Install composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -20,7 +21,7 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Set permissions
 RUN chown -R www-data:www-data storage bootstrap/cache \
@@ -29,6 +30,9 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
 # Copy nginx configuration
 COPY docker/nginx.conf /etc/nginx/sites-available/default
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Run post-install scripts manually
+RUN composer run-script post-autoload-dump
 
 # Optimize Laravel
 RUN php artisan config:cache \

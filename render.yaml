@@ -6,6 +6,7 @@ services:
     branch: main
     dockerfilePath: ./Dockerfile
     autoDeploy: true
+    buildCommand: "composer install --no-dev --optimize-autoloader --no-scripts && composer run-script post-autoload-dump"
     envVars:
       - key: APP_ENV
         value: production
