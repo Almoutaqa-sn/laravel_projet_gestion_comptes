@@ -20,6 +20,9 @@ WORKDIR /app
 # Copy project files
 COPY . .
 
+# Copy environment file for artisan commands
+COPY .env .env
+
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
@@ -31,14 +34,13 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
 COPY docker/nginx.conf /etc/nginx/sites-available/default
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Run post-install scripts manually
-RUN composer run-script post-autoload-dump
+# Run post-install scripts manually (without DB connection)
+RUN php artisan package:discover --ansi
 
-# Optimize Laravel
+# Optimize Laravel (without DB-dependent commands)
 RUN php artisan config:cache \
     && php artisan route:cache \
-    && php artisan view:cache \
-    && php artisan storage:link
+    && php artisan view:cache
 
 EXPOSE 8000
 

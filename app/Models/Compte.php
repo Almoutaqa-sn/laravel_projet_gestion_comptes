@@ -113,4 +113,23 @@ public function scopeClient($query, $telephone)
     {
         return $this->transactions()->get();
     }
+
+    /**
+     * Attribut personnalisé pour le solde calculé
+     */
+    public function getSoldeAttribute()
+    {
+        // Calculer le solde basé sur les transactions
+        $debits = $this->transactions()
+            ->where('statut', 'VALIDEE')
+            ->whereIn('type', ['RETRAIT', 'FRAIS'])
+            ->sum('montant');
+
+        $credits = $this->transactions()
+            ->where('statut', 'VALIDEE')
+            ->whereIn('type', ['DEPOT', 'VIREMENT'])
+            ->sum('montant');
+
+        return $credits - $debits;
+    }
 }

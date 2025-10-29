@@ -10,8 +10,8 @@
     },
     "servers": [
         {
-            "url": "http://127.0.0.1:8000/api/v1",
-            "description": "Serveur local"
+            "url": "https://laravel-projet-gestion-comptes.onrender.com/api/v1",
+            "description": "Serveur de production"
         },
         {
             "url": "/"
@@ -134,6 +134,204 @@
                 "responses": {
                     "200": {
                         "description": "Liste des comptes récupérée avec succès"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Comptes"
+                ],
+                "summary": "Créer un nouveau compte bancaire",
+                "description": "Créer un nouveau compte",
+                "operationId": "458db376a3bd23c52102bbd05cda318b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "type",
+                                    "soldeInitial",
+                                    "devise",
+                                    "client"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "CHEQUE",
+                                            "EPARGNE"
+                                        ],
+                                        "example": "cheque"
+                                    },
+                                    "soldeInitial": {
+                                        "type": "number",
+                                        "minimum": 10000,
+                                        "example": 500000
+                                    },
+                                    "devise": {
+                                        "type": "string",
+                                        "enum": [
+                                            "FCFA",
+                                            "XOF",
+                                            "USD",
+                                            "EUR"
+                                        ],
+                                        "example": "FCFA"
+                                    },
+                                    "client": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "string",
+                                                "format": "uuid",
+                                                "example": null,
+                                                "nullable": true
+                                            },
+                                            "titulaire": {
+                                                "type": "string",
+                                                "example": "Hawa BB Wane"
+                                            },
+                                            "nci": {
+                                                "type": "string",
+                                                "example": "1234567890123",
+                                                "nullable": true
+                                            },
+                                            "email": {
+                                                "type": "string",
+                                                "format": "email",
+                                                "example": "cheikh.sy@example.com"
+                                            },
+                                            "telephone": {
+                                                "type": "string",
+                                                "example": "+221771234567"
+                                            },
+                                            "adresse": {
+                                                "type": "string",
+                                                "example": "Dakar, Sénégal"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Compte créé avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Compte créé avec succès"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid",
+                                                    "example": "660f9511-f30c-52e5-b827-557766551111"
+                                                },
+                                                "numeroCompte": {
+                                                    "type": "string",
+                                                    "example": "C00123460"
+                                                },
+                                                "titulaire": {
+                                                    "type": "string",
+                                                    "example": "Cheikh Sy"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "example": "cheque"
+                                                },
+                                                "solde": {
+                                                    "type": "number",
+                                                    "example": 500000
+                                                },
+                                                "devise": {
+                                                    "type": "string",
+                                                    "example": "FCFA"
+                                                },
+                                                "dateCreation": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-10-19T10:30:00Z"
+                                                },
+                                                "statut": {
+                                                    "type": "string",
+                                                    "example": "actif"
+                                                },
+                                                "metadata": {
+                                                    "properties": {
+                                                        "derniereModification": {
+                                                            "type": "string",
+                                                            "format": "date-time",
+                                                            "example": "2025-10-19T10:30:00Z"
+                                                        },
+                                                        "version": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Données invalides",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "example": "VALIDATION_ERROR"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Les données fournies sont invalides"
+                                                },
+                                                "details": {
+                                                    "properties": {
+                                                        "client.telephone": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string",
+                                                                "example": "Le numéro de téléphone doit être un numéro sénégalais valide"
+                                                            }
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }

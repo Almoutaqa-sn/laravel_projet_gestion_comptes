@@ -36,13 +36,16 @@ class CompteService
         \Log::info('Params reçus dans listerComptes:', $params);
         $query = Compte::query();
 
+        // Filtre par défaut : exclure les comptes BLOQUE et FERME
+        $query->whereNotIn('statut', ['BLOQUE', 'FERME']);
+
         // Filtre par type
         if (!empty($params['type'])) {
             \Log::info('Application du filtre type:', ['type' => $params['type']]);
             $query->where('type', $params['type']);
         }
 
-        // Filtre par statut
+        // Filtre par statut (si spécifié explicitement)
         if (!empty($params['statut'])) {
             \Log::info('Application du filtre statut:', ['statut' => $params['statut']]);
             $query->where('statut', $params['statut']);

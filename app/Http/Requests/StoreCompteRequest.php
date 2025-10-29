@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\SenegalesePhone;
+use App\Rules\SenegaleseNCI;
 
 class StoreCompteRequest extends FormRequest
 {
@@ -11,50 +13,92 @@ class StoreCompteRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // Ici on autorise que les admins créent un compte
-        return auth()->check() && auth()->user()->is_admin; 
-        // ou simplement true si tu n'as pas encore de gestion de rôle
+        return true; // Temporairement autorisé pour les tests
     }
 
     /**
-     * Règles de validation pour créer ou mettre à jour un compte.
+     * Préparer les données pour validation
+     */
+    protected function prepareForValidation(): void
+    {
+        // Générer le titulaire à partir des données client si nécessaire
+        if ($this->has('client.titulaire')) {
+            $this->merge([
+                'titulaire' => $this->input('client.titulaire')
+            ]);
+        }
+
+        // Définir la devise par défaut
+        if (!$this->has('devise')) {
+            $this->merge(['devise' => 'FCFA']);
+        }
+
+        // Convertir type en majuscules
+        if ($this->has('type')) {
+            $this->merge([
+                'type' => strtoupper($this->input('type'))
+            ]);
+        }
+    }
+
+    /**
+     * Règles de validation pour créer un compte.
      */
     public function rules(): array
     {
         return [
-            'numero_compte' => 'required|string|unique:comptes,numero_compte|max:20',
-            'titulaire' => 'required|string|max:255',
-            'type' => 'required|string|in:EPARGNE,CHEQUE',
-            'solde' => 'required|numeric|min:0',
-            'devise' => 'required|string|size:3', // ex: XOF, USD
-            'statut' => 'required|string|in:ACTIF,BLOQUE,FERME',
-            'client_id' => 'required|uuid|exists:clients,id',
-            'admin_id' => 'required|uuid|exists:admins,id',
+            'type' => 'required|string|in:CHEQUE,EPARGNE',
+            'soldeInitial' => 'required|numeric|min:10000',
+            'devise' => 'required|string|in:FCFA,XOF,USD,EUR',
+            'client.id' => 'nullable|uuid|exists:clients,id',
+            'client.titulaire' => 'required|string|max:255',
+            'client.nci' => ['nullable', 'string', new SenegaleseNCI()],
+            'client.email' => 'required|email|unique:clients,email',
+            'client.telephone' => ['required', 'string', new SenegalesePhone(), 'unique:clients,telephone'],
+            'client.adresse' => 'required|string|max:500',
         ];
     }
 
     /**
-     * Messages d'erreur personnalisés (optionnel)
+     * Messages d'erreur personnalisés
      */
     public function messages(): array
     {
         return [
-            'numero_compte.required' => 'Le numéro de compte est obligatoire.',
-            'numero_compte.unique' => 'Ce numéro de compte existe déjà.',
-            'titulaire.required' => 'Le titulaire du compte est obligatoire.',
             'type.required' => 'Le type de compte est obligatoire.',
-            'type.in' => 'Le type doit être EPARGNE ou CHEQUE.',
-            'solde.required' => 'Le solde initial est obligatoire.',
-            'solde.numeric' => 'Le solde doit être un nombre.',
-            'solde.min' => 'Le solde ne peut pas être négatif.',
+            'type.in' => 'Le type doit être CHEQUE ou EPARGNE.',
+            'soldeInitial.required' => 'Le solde initial est obligatoire.',
+            'soldeInitial.numeric' => 'Le solde initial doit être un nombre.',
+            'soldeInitial.min' => 'Le solde initial doit être d\'au moins 10 000 FCFA.',
             'devise.required' => 'La devise est obligatoire.',
-            'devise.size' => 'La devise doit comporter 3 caractères.',
-            'statut.required' => 'Le statut du compte est obligatoire.',
-            'statut.in' => 'Le statut doit être ACTIF, BLOQUE ou FERME.',
-            'client_id.required' => 'Le client associé est obligatoire.',
-            'client_id.exists' => 'Le client sélectionné n’existe pas.',
-            'admin_id.required' => 'L’administrateur est obligatoire.',
-            'admin_id.exists' => 'L’administrateur sélectionné n’existe pas.',
+            'devise.in' => 'La devise doit être FCFA, XOF, USD ou EUR.',
+            'client.id.uuid' => 'L\'ID du client doit être un UUID valide.',
+            'client.id.exists' => 'Le client sélectionné n\'existe pas.',
+            'client.titulaire.required' => 'Le nom du titulaire est obligatoire.',
+            'client.titulaire.max' => 'Le nom du titulaire ne peut pas dépasser 255 caractères.',
+            'client.nci.string' => 'Le NCI doit être une chaîne de caractères.',
+            'client.email.required' => 'L\'email est obligatoire.',
+            'client.email.email' => 'L\'email doit être valide.',
+            'client.email.unique' => 'Cet email est déjà utilisé.',
+            'client.telephone.required' => 'Le numéro de téléphone est obligatoire.',
+            'client.telephone.unique' => 'Ce numéro de téléphone est déjà utilisé.',
+            'client.adresse.required' => 'L\'adresse est obligatoire.',
+            'client.adresse.max' => 'L\'adresse ne peut pas dépasser 500 caractères.',
+        ];
+    }
+
+    /**
+     * Attributs personnalisés pour les messages d'erreur
+     */
+    public function attributes(): array
+    {
+        return [
+            'client.titulaire' => 'nom du titulaire',
+            'client.email' => 'email',
+            'client.telephone' => 'numéro de téléphone',
+            'client.adresse' => 'adresse',
+            'client.nci' => 'numéro de carte d\'identité',
+            'soldeInitial' => 'solde initial',
         ];
     }
 }

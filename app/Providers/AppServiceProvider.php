@@ -40,5 +40,8 @@ class AppServiceProvider extends ServiceProvider
             Log::error('Database connection failed: ' . $e->getMessage());
             throw $e;
         }
+
+        // Enregistrer les observers
+        \App\Models\Compte::observe(\App\Observers\CompteObserver::class);
     }
 }

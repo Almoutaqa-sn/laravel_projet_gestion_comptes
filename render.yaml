@@ -6,7 +6,7 @@ services:
     branch: main
     dockerfilePath: ./Dockerfile
     autoDeploy: true
-    buildCommand: "composer install --no-dev --optimize-autoloader --no-scripts && composer run-script post-autoload-dump"
+    startCommand: "php artisan migrate --force && php artisan db:seed --force && php artisan l5-swagger:generate && /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf"
     envVars:
       - key: APP_ENV
         value: production
