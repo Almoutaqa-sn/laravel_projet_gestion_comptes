@@ -31,13 +31,13 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
 COPY docker/nginx.conf /etc/nginx/sites-available/default
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Run post-install scripts manually (without DB connection)
-RUN php artisan package:discover --ansi
+# Skip artisan commands that require DB connection during build
+# They will be run at startup instead
 
-# Optimize Laravel (without DB-dependent commands)
-RUN php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache
+# Create basic Laravel directories and set permissions
+RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views \
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
 EXPOSE 8000
 
