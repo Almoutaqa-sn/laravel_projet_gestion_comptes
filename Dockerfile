@@ -20,9 +20,6 @@ WORKDIR /app
 # Copy project files
 COPY . .
 
-# Copy environment file for artisan commands
-COPY .env .env
-
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
