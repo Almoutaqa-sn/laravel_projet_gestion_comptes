@@ -6,7 +6,46 @@ services:
     branch: main
     dockerfilePath: ./Dockerfile
     autoDeploy: true
-    startCommand: "sleep 10 && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan migrate --force && php artisan db:seed --force && php artisan l5-swagger:generate && /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf"
+    healthCheckPath: /health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        sync: false
+      - key: APP_URL
+        fromService:
+          type: web
+          name: laravel-projet-gestion-comptes
+          property: host
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: laravel_gestion_comptes_db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: laravel_gestion_comptes_db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: laravel_gestion_comptes_db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: laravel_gestion_comptes_db
+          property: username
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: laravel_gestion_comptes_db
+          property: password
+      - key: LOG_CHANNEL
+        value: stack
+      - key: LOG_LEVEL
+        value: error
+    startCommand: "sleep 15 && php artisan migrate --force && php artisan db:seed --force && php artisan l5-swagger:generate && /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf"
     envVars:
       - key: APP_ENV
         value: production
