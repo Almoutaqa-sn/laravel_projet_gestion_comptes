@@ -6,7 +6,7 @@ services:
     branch: main
     dockerfilePath: ./Dockerfile
     autoDeploy: true
-    startCommand: "php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan migrate --force && php artisan db:seed --force && php artisan l5-swagger:generate && /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf"
+    startCommand: "php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan migrate --force && php artisan db:seed --force && php artisan l5-swagger:generate && /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf"
     envVars:
       - key: APP_ENV
         value: production
