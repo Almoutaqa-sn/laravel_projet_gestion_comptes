@@ -55,7 +55,7 @@ COPY docker/nginx.conf /etc/nginx/sites-available/default
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Copy environment file
-COPY .env .env
+# COPY .env .env
 
 # Create Laravel storage directories
 RUN mkdir -p storage/logs \
